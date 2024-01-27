@@ -23,3 +23,20 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.addAll({
+  access() {
+    cy.visit('https://demoqa.com');
+    cy.get('header')
+      .should('be.visible')
+      .find('img').should('have.attr', 'src').should('include', 'Toolsqa');
+  },
+
+  accessElements() {
+    cy.contains('h5', 'Elements')
+      .should('be.visible')
+      .click();
+    cy.contains('Please select an item from left to start practice.')
+      .should('be.visible');
+  }
+});
