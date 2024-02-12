@@ -27,3 +27,10 @@ Scenario: Access DemoQA website
       And I click the toggle arrow in "Home" label
         Then the icon will change to an open folder
           And 3 more expandable toogles will show up, Desktop, Documents and Downloads
+
+  Scenario: Expand "Desktop" toggle
+    And I click "Check Box" submenu
+      And I click the toggle arrow in "Desktop" label
+        Then the icon will change to an open folder
+          And 2 new document elements will show up, Notes and Commands
+          
