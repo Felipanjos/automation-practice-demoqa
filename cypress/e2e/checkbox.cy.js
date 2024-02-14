@@ -1,6 +1,6 @@
 describe('Checkboxes validation', () => {
   const element = "Check Box";
-  const folders = ['home desktop notes commands documents workspace react angular veu office public private classified general downloads worldFile excelFile'];
+  const resources = ['Home', 'Desktop', 'Notes', 'Commands', 'Documents', 'WorkSpace', 'React', 'Angular', 'Veu', 'Office', 'Public', 'Private', 'Classified', 'General', 'Downloads', 'Word  File.doc', 'Excel File.doc'];
 
   beforeEach(() => {
     cy.accessElementsPageDirectly();
@@ -19,17 +19,12 @@ describe('Checkboxes validation', () => {
     cy.accessElementsPageDirectly();
     cy.clickTab(element);
 
-    cy.url()
-      .should('include', 'checkbox');
-
-    cy.get('div.main-header')
-      .should('be.visible')
-      .and('have.text', element);
+    cy.assertCheckboxPage();
 
     cy.validateCheckboxTree('Home');
   });
 
-  it.only('Expand "Home" toggle', () => {
+  it('Expand "Home" toggle', () => {
     cy.accessCheckboxAndOpenToggle();
     
     cy.validateCheckboxTree('Home', 'Open');
@@ -43,11 +38,7 @@ describe('Checkboxes validation', () => {
 
     cy.validateFourMainMenus();
 
-    cy.clickToggle('Desktop');
-
-    cy.validateCheckboxTree('Notes');
-    cy.validateCheckboxTree('Commands');
-    cy.ignoreException();
+    cy.expandAndValidateDesktop();
   });
 
   it('Expand "Documents" toggle', () => {
@@ -55,28 +46,42 @@ describe('Checkboxes validation', () => {
 
     cy.validateFourMainMenus();
 
-    cy.clickToggle('Documents');
+    cy.expandAndValidateDocuments();
 
-    cy.validateCheckboxTree('WorkSpace');
-    cy.validateCheckboxTree('Office');
     cy.ignoreException();
   });
 
-  it('Expand "WorkSpace" toggle', () => {
+  it.only('Expand "WorkSpace" toggle', () => {
     cy.accessCheckboxAndOpenToggle();
 
     cy.validateFourMainMenus();
 
-    cy.clickToggle('Documents');
-
-    cy.validateCheckboxTree('WorkSpace');
+    cy.expandAndValidateDocuments();
     
-    cy.clickToggle('WorkSpace');
-    cy.validateCheckboxTree('WorkSpace', 'Open');
+    cy.expandAndValidateWorkspaces();
+  });
 
-    cy.validateWorkSpaces();
-    cy.validateCheckboxTree('Office');
+  it.only('Expand "Office" toggle', () => {
+    cy.accessCheckboxAndOpenToggle();
 
-    cy.ignoreException();
+    cy.validateFourMainMenus();
+
+    cy.expandAndValidateDocuments();
+    
+    cy.expandAndValidateOffice();
+  });
+
+  it.only('Expand "Downloads" toggle', () => {
+    cy.accessCheckboxAndOpenToggle();
+
+    cy.validateFourMainMenus();
+
+    cy.expandAndValidateDownloads();
+  });
+
+  it.only('Expand all toggles', () => {
+    cy.accessCheckbox();
+    cy.expandAll();
+    cy.validateAll();
   });
 }); 

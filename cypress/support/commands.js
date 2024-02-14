@@ -33,41 +33,25 @@ Cypress.Commands.addAll({
     .click();
   },
 
-  // validateCheckboxTree(tree) {
-  //   cy.get(`label[for="tree-node-${tree.toLowerCase()}"]`).children().then((label) => {
-  //     console.log(label[2].innerHTML);
-  //   });
-  // },
+  assertCheckboxPage() {
+    cy.url()
+      .should('include', 'checkbox');
 
-  // validateCheckboxTree(tree) {
-  //   cy.get(`label[for="tree-node-${tree.toLowerCase()}"]`).then((label) => {
-  //     console.log(label);
-  //     label = label[0];
-
-  //     const elements = {
-  //       checkbox: { selector: label.children[1], expectedClass: 'rct-checkbox' },
-  //       icon: { selector: label.children[2], expectedClass: 'rct-node-icon' },
-  //       homeText: { selector: label.lastChild, text: tree }
-  //     };
-      
-  //     Object.entries(elements).forEach(([elementKey, {selector, expectedClass, text }]) => {
-  //       expect(selector).to.be.visible;
-      
-  //       ['checkbox', 'icon'].includes(elementKey) ? 
-  //         expect(selector).to.have.class(expectedClass) : 
-  //         expect(selector).to.have.text(text);
-  //       });
-  //     });
-  // },
+    cy.get('div.main-header')
+      .should('be.visible')
+      .and('have.text', 'Check Box');
+  },
 
   validateCheckboxTree(tree, state = 'close') {
-    cy.ignoreException();
     const folders = ['Home', 'Desktop', 'Documents', 'WorkSpace', 'Office', 'Downloads'];
-    const files = ['Notes', 'Commands', 'React', 'Angular', 'Veu', 'Public', 'Private', 'Classified', 'General', 'World File.doc', 'Excel File.doc'];
+    const resourceType = folders.includes(tree) ? 'parent' : 'leaf';
+    var treeNode = tree.toLowerCase();
     
-    cy.get(`label[for="tree-node-${tree.toLowerCase()}"]`).children().then((label) => {
-      console.log(label);
-
+    if(['Word File.doc', 'Excel File.doc'].includes(tree)) 
+        treeNode = tree === 'Word File.doc' ? 'wordFile' : 'excelFile';
+    
+    cy.get(`label[for="tree-node-${treeNode}"]`).children().then((label) => {
+      // home
       const elements = {
         checkbox: { 
           selector: label[1], 
@@ -75,7 +59,7 @@ Cypress.Commands.addAll({
         },
         icon: {
           selector: label[2], 
-          expectedClass: `rct-icon-${folders.includes(tree) ? 'parent' : 'leaf'}-${state.toLocaleLowerCase()}`},
+          expectedClass: `rct-icon-${resourceType}-${state.toLowerCase()}`},
         homeText: {
           selector: label[3], 
           text: tree
@@ -91,9 +75,16 @@ Cypress.Commands.addAll({
           expect(selector.innerHTML).to.include(expectedClass) : 
           expect(selector.innerHTML).to.include(text);
       });
+
+      cy.ignoreException();
     });
   },
 
+  accessCheckbox() {
+    cy.ignoreException();
+    cy.clickTab('Check Box');
+  },
+  
   accessCheckboxAndOpenToggle() {
     cy.ignoreException();
     cy.clickTab('Check Box');
@@ -128,20 +119,87 @@ Cypress.Commands.addAll({
 
   validateFourMainMenus() {
     cy.validateCheckboxTree('Home', 'Open');
-    cy.validateCheckboxTree('Desktop');
-    cy.validateCheckboxTree('Documents');
-    cy.validateCheckboxTree('Downloads');
+    cy.batchValidate(['Desktop', 'Documents', 'Downloads']);
   },
 
   validateWorkSpaces() {
-    cy.validateCheckboxTree('React');
-    cy.validateCheckboxTree('Angular');
-    cy.validateCheckboxTree('Veu');
+    cy.batchValidate(['React', 'Angular', 'Veu']);
+  },
+
+  validateOffice() {
+    cy.batchValidate(['Public', 'Private', 'Classified', 'General']);
+  },
+  
+  validateDownloads() {
+    cy.batchValidate(['Word File.doc', 'Excel File.doc']);
+  },
+
+  expandAndValidateDocuments() {
+    cy.clickToggle('Documents');
+    cy.batchValidate(['WorkSpace', 'Office']);
+  },
+
+  expandAndValidateDesktop() {
+    cy.clickToggle('Desktop');
+    cy.batchValidate(['Notes', 'Commands']);
+    cy.ignoreException();
+  },
+  
+  expandAndValidateWorkspaces() {
+    const toggle = 'WorkSpace';
+    cy.clickToggle(toggle);
+    cy.validateCheckboxTree(toggle, 'Open');
+    cy.validateWorkSpaces();
+    cy.ignoreException();
+  },
+  
+  expandAndValidateOffice() {
+    const toggle = 'Office';
+    cy.clickToggle(toggle);
+    cy.validateCheckboxTree(toggle, 'Open');
+    cy.validateOffice();
+    cy.ignoreException();
+  },
+  
+  expandAndValidateDownloads() {
+    const toggle = 'Downloads';
+    cy.clickToggle(toggle);
+    cy.validateCheckboxTree(toggle, 'Open');
+    cy.validateDownloads();
+    cy.ignoreException();
+  },
+
+  expandAll() { 
+    cy.get('button[aria-label="Expand all"]')
+      .should('be.visible')
+      .click();
+  },
+
+  batchValidate(batch) { 
+    batch.forEach((element) => cy.validateCheckboxTree(element));
+  },
+  
+  validateAll() { 
+    /** TODO
+     * Create Checkbox POM to unify folder calls 
+     */
+    cy.validateCheckboxTree('Home', 'Open');
+    cy.validateCheckboxTree('Desktop', 'Open');
+    cy.batchValidate(['Notes', 'Commands']);
+
+    cy.validateCheckboxTree('Documents', 'Open');
+    cy.validateCheckboxTree('WorkSpace', 'Open');
+    cy.batchValidate(['React', 'Angular', 'Veu']);
+
+    cy.validateCheckboxTree('Office', 'Open');
+    cy.batchValidate(['Public', 'Private', 'Classified', 'General']);
+
+    cy.validateCheckboxTree('Downloads', 'Open');
+
+    cy.batchValidate(['Word File.doc', 'Excel File.doc']);
   },
 
   ignoreException(){
-    Cypress.on('uncaught:exception', (err, runnable) => {
-      return false;
-    });
+    Cypress.on('uncaught:exception', (err, runnable) => {return false});
   }
 });
