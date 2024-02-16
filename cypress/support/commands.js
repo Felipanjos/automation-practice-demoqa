@@ -7,25 +7,6 @@ Cypress.Commands.addAll({
       .find('img').should('have.attr', 'src').should('include', 'Toolsqa');
   },
 
-  accessElementsPageByMenu() {
-    cy.contains('h5', 'Elements')
-      .should('be.visible')
-      .click();
-    cy.url()
-      .should('include', 'elements');
-    cy.contains('Please select an item from left to start practice.')
-      .should('be.visible');
-    cy.get('div.element-list.collapse.show')
-      .should('be.visible');
-    cy.get('ul.menu-list')
-      .should('be.visible');
-  },
-
-  accessElementsPageDirectly() {
-    cy.accessDemoQA();
-    cy.accessElementsPageByMenu();
-  },
-
   clickTab(tab) {
     cy.get('#item-1')
     .should('be.visible')
@@ -37,7 +18,7 @@ Cypress.Commands.addAll({
     cy.url()
       .should('include', 'checkbox');
 
-    cy.get('div.main-header')
+    cy.get('h1.text-center')
       .should('be.visible')
       .and('have.text', 'Check Box');
   },

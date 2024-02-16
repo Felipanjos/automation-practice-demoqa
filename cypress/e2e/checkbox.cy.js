@@ -1,22 +1,40 @@
+import Home from '../POM/Home';
+import Elements from '../POM/Elements';
+
 describe('Checkboxes validation', () => {
   const element = "Check Box";
   const resources = ['Home', 'Desktop', 'Notes', 'Commands', 'Documents', 'WorkSpace', 'React', 'Angular', 'Veu', 'Office', 'Public', 'Private', 'Classified', 'General', 'Downloads', 'Word  File.doc', 'Excel File.doc'];
 
   beforeEach(() => {
-    cy.accessElementsPageDirectly();
+    switch(Cypress.currentTest.title) {
+      case 'Access DemoQA website':
+        break;
+      case 'Access Elements through menu':
+        break;
+      case 'Access Elements page':
+        break;
+      default: 
+        Elements.visit();
+    }
   });
 
   it('Access DemoQA website', () => {
-    cy.accessDemoQA();
+    Home.visit();
+    Home.isHomePage();
   });
 
-  it('Access Elements tab', () => {
-    cy.accessDemoQA();
-    cy.accessElementsPageByMenu();
+  it('Access Elements through menu', () => {
+    Home.visit();
+    Home.accessElementsPage();
+    Elements.isElementsPage();
+  });
+
+  it('Access Elements page', () => {
+    Elements.visit();
+    Elements.isElementsPage();
   });
 
   it('Access Check Box tab', () => {
-    cy.accessElementsPageDirectly();
     cy.clickTab(element);
 
     cy.assertCheckboxPage();
@@ -51,7 +69,7 @@ describe('Checkboxes validation', () => {
     cy.ignoreException();
   });
 
-  it.only('Expand "WorkSpace" toggle', () => {
+  it('Expand "WorkSpace" toggle', () => {
     cy.accessCheckboxAndOpenToggle();
 
     cy.validateFourMainMenus();
@@ -61,7 +79,7 @@ describe('Checkboxes validation', () => {
     cy.expandAndValidateWorkspaces();
   });
 
-  it.only('Expand "Office" toggle', () => {
+  it('Expand "Office" toggle', () => {
     cy.accessCheckboxAndOpenToggle();
 
     cy.validateFourMainMenus();
@@ -71,7 +89,7 @@ describe('Checkboxes validation', () => {
     cy.expandAndValidateOffice();
   });
 
-  it.only('Expand "Downloads" toggle', () => {
+  it('Expand "Downloads" toggle', () => {
     cy.accessCheckboxAndOpenToggle();
 
     cy.validateFourMainMenus();
@@ -79,7 +97,7 @@ describe('Checkboxes validation', () => {
     cy.expandAndValidateDownloads();
   });
 
-  it.only('Expand all toggles', () => {
+  it('Expand all toggles', () => {
     cy.accessCheckbox();
     cy.expandAll();
     cy.validateAll();
