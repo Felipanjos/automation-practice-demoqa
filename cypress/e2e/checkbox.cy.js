@@ -1,21 +1,13 @@
 import Home from '../POM/Home';
 import Elements from '../POM/Elements';
+import Checkbox from '../POM/Checkbox';
 
 describe('Checkboxes validation', () => {
-  const element = "Check Box";
   const resources = ['Home', 'Desktop', 'Notes', 'Commands', 'Documents', 'WorkSpace', 'React', 'Angular', 'Veu', 'Office', 'Public', 'Private', 'Classified', 'General', 'Downloads', 'Word  File.doc', 'Excel File.doc'];
 
   beforeEach(() => {
-    switch(Cypress.currentTest.title) {
-      case 'Access DemoQA website':
-        break;
-      case 'Access Elements through menu':
-        break;
-      case 'Access Elements page':
-        break;
-      default: 
-        Elements.visit();
-    }
+    if(!['Access DemoQA website', 'Access Elements through menu'].includes(Cypress.currentTest.title))
+      Elements.visit();
   });
 
   it('Access DemoQA website', () => {
@@ -30,76 +22,72 @@ describe('Checkboxes validation', () => {
   });
 
   it('Access Elements page', () => {
-    Elements.visit();
     Elements.isElementsPage();
   });
 
   it('Access Check Box tab', () => {
-    cy.clickTab(element);
+    Elements.clickTab('Check Box');
 
-    cy.assertCheckboxPage();
+    Checkbox.isCheckboxPage();
 
-    cy.validateCheckboxTree('Home');
+    Checkbox.validateTree('Home');
   });
 
   it('Expand "Home" toggle', () => {
-    cy.accessCheckboxAndOpenToggle();
+    Elements.accessCheckboxAndOpenToggle();
     
-    cy.validateCheckboxTree('Home', 'Open');
+    Checkbox.validateTree('Home', 'Open');
     
-    cy.validateFourMainMenus();
-    cy.ignoreException();
+    Checkbox.validateFourMainMenus();
   });
 
   it('Expand "Desktop" toggle', () => {
-    cy.accessCheckboxAndOpenToggle();
+    Elements.accessCheckboxAndOpenToggle();
 
-    cy.validateFourMainMenus();
+    Checkbox.validateFourMainMenus();
 
-    cy.expandAndValidateDesktop();
+    Checkbox.expandAndValidateDesktop();
   });
 
   it('Expand "Documents" toggle', () => {
-    cy.accessCheckboxAndOpenToggle();
+    Elements.accessCheckboxAndOpenToggle();
 
-    cy.validateFourMainMenus();
+    Checkbox.validateFourMainMenus();
 
-    cy.expandAndValidateDocuments();
-
-    cy.ignoreException();
+    Checkbox.expandAndValidateDocuments();
   });
 
   it('Expand "WorkSpace" toggle', () => {
-    cy.accessCheckboxAndOpenToggle();
+    Elements.accessCheckboxAndOpenToggle();
 
-    cy.validateFourMainMenus();
+    Checkbox.validateFourMainMenus();
 
-    cy.expandAndValidateDocuments();
+    Checkbox.expandAndValidateDocuments();
     
-    cy.expandAndValidateWorkspaces();
+    Checkbox.expandAndValidateWorkspaces();
   });
 
   it('Expand "Office" toggle', () => {
-    cy.accessCheckboxAndOpenToggle();
+    Elements.accessCheckboxAndOpenToggle();
 
-    cy.validateFourMainMenus();
+    Checkbox.validateFourMainMenus();
 
-    cy.expandAndValidateDocuments();
+    Checkbox.expandAndValidateDocuments();
     
-    cy.expandAndValidateOffice();
+    Checkbox.expandAndValidateOffice();
   });
 
   it('Expand "Downloads" toggle', () => {
-    cy.accessCheckboxAndOpenToggle();
+    Elements.accessCheckboxAndOpenToggle();
 
-    cy.validateFourMainMenus();
+    Checkbox.validateFourMainMenus();
 
-    cy.expandAndValidateDownloads();
+    Checkbox.expandAndValidateDownloads();
   });
 
   it('Expand all toggles', () => {
-    cy.accessCheckbox();
-    cy.expandAll();
-    cy.validateAll();
+    Elements.accessCheckbox();
+    Checkbox.expandAll();
+    Checkbox.validateAll();
   });
 }); 

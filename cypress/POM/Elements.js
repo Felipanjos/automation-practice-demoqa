@@ -1,3 +1,5 @@
+import Checkbox from "./Checkbox";
+
 export default new class Elements {
   isElementsPage() {
     cy.url()
@@ -11,6 +13,23 @@ export default new class Elements {
   }
 
   visit() {
+    cy.ignoreException();
     cy.visit('https://demoqa.com/elements');
+  }
+
+  clickTab(tab) {
+    cy.get('#item-1')
+      .should('be.visible')
+      .should('have.text', tab)
+      .click();
+  }
+
+  accessCheckbox() {
+    this.clickTab('Check Box');
+  }
+
+  accessCheckboxAndOpenToggle() {
+    this.clickTab('Check Box');
+    Checkbox.clickToggle('Home');
   }
 }
