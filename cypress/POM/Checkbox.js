@@ -1,25 +1,39 @@
 import Elements from "./Elements";
 
 export default new class Checkbox {
+  constructor () {
+    this.folders = ['Home', 'Desktop', 'Documents', 'WorkSpace', 'Office', 'Downloads'];
+    this.subMainFolders = ['Desktop', 'Documents', 'Downloads'];
+    this.workspaceFiles = ['React', 'Angular', 'Veu'];
+    this.officeFiles = ['Public', 'Private', 'Classified', 'General'];
+    this.downloadFiles = ['Word File.doc', 'Excel File.doc'];
+    this.desktopFiles = ['Notes', 'Commands'];
+    this.files = ['React', 'Angular', 'Veu', 'Public', 'Private', 'Classified', 'General', 'Word File.doc', 'Excel File.doc', 'Notes', 'Commands'];
+    this.documents = ['WorkSpace', 'Office'];
+    
+    this.selectors = {
+      title: 'h1.text-center',
+      expandAll:'button[aria-label="Expand all"]'
+    }
+  }
+
   isCheckboxPage() {
     cy.url()
       .should('include', 'checkbox');
 
-    cy.get('h1.text-center')
+    cy.get(this.selectors.title)
       .should('be.visible')
       .and('have.text', 'Check Box');
   }
 
   validateTree(tree, state = 'close') {
-    const folders = ['Home', 'Desktop', 'Documents', 'WorkSpace', 'Office', 'Downloads'];
-    const resourceType = folders.includes(tree) ? 'parent' : 'leaf';
+    const resourceType = this.folders.includes(tree) ? 'parent' : 'leaf';
     var treeNode = tree.toLowerCase();
     
-    if(['Word File.doc', 'Excel File.doc'].includes(tree)) 
-        treeNode = tree === 'Word File.doc' ? 'wordFile' : 'excelFile';
+    if(this.downloadFiles.includes(tree)) 
+      treeNode = tree === 'Word File.doc' ? 'wordFile' : 'excelFile';
     
     cy.get(`label[for="tree-node-${treeNode}"]`).children().then((label) => {
-      // home
       const elements = {
         checkbox: { 
           selector: label[1], 
@@ -34,18 +48,20 @@ export default new class Checkbox {
         }
       };
       
-      Object.entries(elements).forEach(([elementKey, {selector, expectedClass, text}]) => {
+      Object.entries(elements).forEach(([element, {selector, expectedClass, text}]) => {
         expect(selector).to.be.visible;
 
-        elementKey === 'checkbox' ? 
+        element === 'checkbox' ? 
           expect(selector).to.have.class(expectedClass) : 
-        elementKey === 'icon' ?
+        element === 'icon' ?
           expect(selector.innerHTML).to.include(expectedClass) : 
           expect(selector.innerHTML).to.include(text);
       });
-
-      cy.ignoreException();
     });
+  }
+
+  validateOpenFolder(tree)  {
+    this.validateTree(tree, 'Open');
   }
 
   clickToggle(toggle) {
@@ -55,17 +71,18 @@ export default new class Checkbox {
       toggleList.length > 4 ?
         [home, desktop, documents, workspace, office, downloads] = toggleList :
         [home, desktop, documents, downloads] = toggleList;
-
-      const toggleMap = {
-        'home': home,
-        'desktop': desktop,
-        'documents': documents,
-        'workspace': workspace,
-        'office': office,
-        'downloads': downloads,
-      };
-      
-      let targetToggle = toggleMap[toggle.toLowerCase()] || home;
+  
+      const targetToggle = (() => {
+        let map = {
+          'home': home,
+          'desktop': desktop,
+          'documents': documents,
+          'workspace': workspace,
+          'office': office,
+          'downloads': downloads
+        } 
+        return map[toggle.toLowerCase()] || home;
+      })();
 
       cy.wrap(toggleList)
         .get(targetToggle)
@@ -75,80 +92,69 @@ export default new class Checkbox {
   }
 
   validateFourMainMenus() {
-    this.validateTree('Home', 'Open');
-    this.batchValidate(['Desktop', 'Documents', 'Downloads']);
+    this.validateOpenFolder('Home');
+    this.batchValidateTree(this.subMainFolders);
   }
 
   validateWorkSpaces() {
-    this.batchValidate(['React', 'Angular', 'Veu']);
+    this.batchValidateTree(this.workspaceFiles);
   }
 
   validateOffice() {
-    this.batchValidate(['Public', 'Private', 'Classified', 'General']);
+    this.batchValidateTree(this.officeFiles);
   }
   
   validateDownloads() {
-    this.batchValidate(['Word File.doc', 'Excel File.doc']);
+    this.batchValidateTree(this.downloadFiles);
   }
 
   expandAndValidateDocuments() {
     this.clickToggle('Documents');
-    this.batchValidate(['WorkSpace', 'Office']);
+    this.batchValidateTree(this.documents);
   }
 
   expandAndValidateDesktop() {
     this.clickToggle('Desktop');
-    this.batchValidate(['Notes', 'Commands']);
+    this.batchValidateTree(this.desktopFiles);
   }
   
   expandAndValidateWorkspaces() {
-    const toggle = 'WorkSpace';
+    const toggle = ('WorkSpace');
     this.clickToggle(toggle);
-    this.validateTree(toggle, 'Open');
+    this.validateOpenFolder(toggle);
     this.validateWorkSpaces();
   }
   
   expandAndValidateOffice() {
     const toggle = 'Office';
     this.clickToggle(toggle);
-    this.validateTree(toggle, 'Open');
+    this.validateOpenFolder(toggle);
     this.validateOffice();
   }
   
   expandAndValidateDownloads() {
     const toggle = 'Downloads';
     this.clickToggle(toggle);
-    this.validateTree(toggle, 'Open');
+    this.validateOpenFolder(toggle);
     this.validateDownloads();
   }
 
   expandAll() { 
-    cy.get('button[aria-label="Expand all"]')
+    cy.get(this.selectors.expandAll)
       .should('be.visible')
       .click();
   }
 
-  batchValidate(batch) { 
+  batchValidateTree(batch) { 
     batch.forEach((element) => this.validateTree(element));
+  }
+
+  batchValidateOpenFolder(batch) {
+    batch.forEach((element) => this.validateOpenFolder(element));
   }
   
   validateAll() { 
-    /** TODO
-     * Create Checkbox POM to unify folder calls 
-     */
-    this.validateTree('Home', 'Open');
-    this.validateTree('Desktop', 'Open');
-    this.batchValidate(['Notes', 'Commands']);
-
-    this.validateTree('Documents', 'Open');
-    this.validateTree('WorkSpace', 'Open');
-    this.batchValidate(['React', 'Angular', 'Veu']);
-
-    this.validateTree('Office', 'Open');
-    this.batchValidate(['Public', 'Private', 'Classified', 'General']);
-
-    this.validateTree('Downloads', 'Open');
-
-    this.batchValidate(['Word File.doc', 'Excel File.doc']);
+    this.batchValidateOpenFolder(this.folders);
+    this.batchValidateTree(this.files);
   }
 }

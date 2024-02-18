@@ -3,8 +3,6 @@ import Elements from '../POM/Elements';
 import Checkbox from '../POM/Checkbox';
 
 describe('Checkboxes validation', () => {
-  const resources = ['Home', 'Desktop', 'Notes', 'Commands', 'Documents', 'WorkSpace', 'React', 'Angular', 'Veu', 'Office', 'Public', 'Private', 'Classified', 'General', 'Downloads', 'Word  File.doc', 'Excel File.doc'];
-
   beforeEach(() => {
     if(!['Access DemoQA website', 'Access Elements through menu'].includes(Cypress.currentTest.title))
       Elements.visit();
@@ -36,7 +34,7 @@ describe('Checkboxes validation', () => {
   it('Expand "Home" toggle', () => {
     Elements.accessCheckboxAndOpenToggle();
     
-    Checkbox.validateTree('Home', 'Open');
+    Checkbox.validateOpenFolder('Home');
     
     Checkbox.validateFourMainMenus();
   });
